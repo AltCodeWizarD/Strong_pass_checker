@@ -1,39 +1,65 @@
-CHECKING_PASSWORD = input("Введите пароль для проверки: ")
+import sys
 
 
-def pass_characteristics(pass_letters, pass_length):
+def check_length(password):
+    if len(password) >= 12:
+        return True, 2
+    print("Ошибка: Пароль слишком короткий (менее 12 символов)")
+    sys.exit(1)
+
+
+def check_digits(password):
+    if any(letter.isdigit() for letter in password):
+        return True, 2
+    print("Ошибка: Пароль не содержит цифр")
+    sys.exit(1)
+
+
+def check_uppercase(password):
+    if any(letter.isupper() for letter in password):
+        return True, 2
+    print("Ошибка: Пароль не содержит заглавных букв")
+    sys.exit(1)
+
+
+def check_lowercase(password):
+    if any(letter.islower() for letter in password):
+        return True, 2
+    print("Ошибка: Пароль не содержит строчных букв")
+    sys.exit(1)
+
+
+def check_specials(password):
+    if not password.isalnum():
+        return True, 2
+    print("Ошибка: Пароль не содержит специальных символов")
+    sys.exit(1)
+
+
+def calculate_score(password):
+    checks = [
+        check_length,
+        check_digits,
+        check_uppercase,
+        check_lowercase,
+        check_specials
+    ]
+
     score = 0
-    print("Проверка надежности пароля:")
-
-    if not any(letter.isdigit() for letter in pass_letters):
-        return print("Пароль не содержит цифр")
-    score = score + 2
-
-    if pass_length < 12:
-        return print("Пароль слишком короткий")
-    score = score + 2
-
-    if not any(letter.isupper() for letter in pass_letters):
-        return print("Пароль не содержит заглавных букв")
-    score = score + 2
-
-    if not any(letter.islower() for letter in pass_letters):
-        return print("Пароль не содержит строчных букв")
-    score = score + 2
-
-    if all(letter.isalnum() for letter in pass_letters):
-        return print("Пароль не содержит специальных символов")
-    score = score + 2
-
-    print(f"Надежность пароля: {score} очков")
+    for check in checks:
+        valid, points = check(password)
+        score = score + points
     return score
 
 
 def main():
-    pass_letters = list(CHECKING_PASSWORD)
-    pass_length = len(CHECKING_PASSWORD)
-    print(f"В пароле {pass_length} символов.")
-    pass_characteristics(pass_letters, pass_length)
+    CHECKING_PASSWORD = input("Введите пароль для проверки: ")
+
+    try:
+        score = calculate_score(CHECKING_PASSWORD)
+        print(f"Надежность пароля: {score} очков")
+    except SystemExit:
+        print("Проверка пароля завершена с ошибкой")
 
 
 if __name__ == '__main__':
